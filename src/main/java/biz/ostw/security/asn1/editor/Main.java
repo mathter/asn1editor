@@ -5,16 +5,22 @@ import javafx.stage.Stage;
 
 import java.security.Security;
 
-public class Main extends Application {
+public class Main {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        biz.ostw.security.asn1.editor.ui.Main.getInstance(primaryStage).show();
+    public static void main(String[] args) {
+        Application.launch(Local.class, args);
     }
 
-    @Override
-    public void stop() throws Exception {
-        super.stop();
+    public static class Local extends Application {
+        @Override
+        public void start(Stage primaryStage) throws Exception {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+            biz.ostw.security.asn1.editor.ui.Main.getInstance(primaryStage).show();
+        }
+
+        @Override
+        public void stop() throws Exception {
+            super.stop();
+        }
     }
 }
