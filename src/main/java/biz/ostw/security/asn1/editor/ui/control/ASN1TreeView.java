@@ -93,10 +93,12 @@ public class ASN1TreeView extends TreeView<ASN1Primitive> implements Callback<Tr
             this.showingProperty().addListener(new ChangeListener<Boolean>() {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    System.out.println(newValue);
                     ContextMenu.this.getItems().remove(FAKE);
 
-                    Optional.ofNullable(ContextMenu.this.cell.getItem()).ifPresent(item -> getItems().addAll(Asn1MenuProvider.provide(item)));
+                    Optional.ofNullable(ContextMenu.this.cell.getItem()).ifPresent(item -> {
+                        getItems().clear();
+                        getItems().addAll(Asn1MenuProvider.provide(item));
+                    });
                 }
             });
 

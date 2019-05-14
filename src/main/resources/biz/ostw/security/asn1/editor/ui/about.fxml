@@ -5,14 +5,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="312.0" maxWidth="512.0" minHeight="312.0" minWidth="512.0" prefHeight="312.0" prefWidth="512.0" style="-fx-background-color: #fcffea;" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="biz.ostw.security.asn1.editor.ui.About">
+<fx:root type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.172-ea"
+         xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Button fx:id="closeButton" layoutX="225.0" layoutY="257.0" mnemonicParsing="false" onAction="#onCloseClick" text="%window.about.button.close.title" />
-        <Label fx:id="mainLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="65.0" layoutY="44.0" prefHeight="163.0" prefWidth="377.0" text="%window.about.mainLabel" textAlignment="CENTER">
+        <Button fx:id="closeButton" layoutX="225.0" layoutY="257.0" mnemonicParsing="false" onAction="#onCloseClick"
+                text="%window.about.button.close.title"/>
+        <Label fx:id="mainLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="65.0" layoutY="44.0"
+               prefHeight="163.0" prefWidth="377.0" text="%window.about.mainLabel" textAlignment="CENTER">
             <font>
-                <Font name="System Bold" size="36.0" />
+                <Font name="System Bold" size="36.0"/>
             </font>
         </Label>
-        <Label fx:id="authorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="2.0" layoutY="207.0" prefHeight="16.0" prefWidth="506.0" text="%window.about.authorLabel" textAlignment="CENTER" />
+        <Label fx:id="authorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="2.0" layoutY="207.0"
+               prefHeight="16.0" prefWidth="506.0" text="%window.about.authorLabel" textAlignment="CENTER"/>
     </children>
-</AnchorPane>
+</fx:root>

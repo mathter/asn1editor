@@ -89,17 +89,7 @@ public class Asn1View extends VBox {
     }
 
     public void setValue(ASN1Primitive asn1) throws IOException {
-
         this.valueProperty.setValue(asn1);
-
-        if (asn1 != null) {
-            final Content<?> content = new ContentAnalyzer().analyze(asn1);
-            this.contentType.setText(String.format(this.resources.getString("biz.ostw.security.asn1.editor.ui.control.Asn1View.objectidentifier.type"), content.getDescription()));
-            this.treeView.setRoot(asn1);
-        } else {
-            this.contentType.setText("");
-            this.treeView.setRoot((ASN1Primitive) null);
-        }
     }
 
     public ObjectProperty<ASN1Primitive> valueProperty() {
@@ -137,6 +127,24 @@ public class Asn1View extends VBox {
         Platform.runLater(() -> {
             this.searchUseRegExpr.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("searchUseRegExpr", newValue));
             this.searchUseRegExpr.selectedProperty().setValue(prefs.getBoolean("searchUseRegExpr", false));
+        });
+
+        this.valueProperty.addListener(new ChangeListener<ASN1Primitive>() {
+            @Override
+            public void changed(ObservableValue<? extends ASN1Primitive> observable, ASN1Primitive oldValue, ASN1Primitive newValue) {
+                if (newValue != null) {
+                    final Content<?> content = new ContentAnalyzer().analyze(newValue);
+                    Asn1View.this.contentType.setText(String.format(Asn1View.this.resources.getString("biz.ostw.security.asn1.editor.ui.control.Asn1View.objectidentifier.type"), content.getDescription()));
+                } else {
+                    Asn1View.this.contentType.setText("");
+                }
+
+                try {
+                    Asn1View.this.treeView.setRoot(newValue);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 

@@ -3,37 +3,39 @@ package biz.ostw.security.asn1.editor.ui;
 import biz.ostw.security.asn1.editor.content.ContentLoader;
 import biz.ostw.security.asn1.editor.ui.control.Asn1View;
 import biz.ostw.security.asn1.editor.ui.util.ExtensionFilterSupplier;
-import biz.ostw.security.asn1.editor.ui.util.FxmlLoader;
-import biz.ostw.security.asn1.editor.ui.util.Initializable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
-public class Main implements Initializable {
+public class Main extends AnchorPane {
 
     private final Preferences preferences = Preferences.userNodeForPackage(Main.class);
 
-    @FXML
-    private Stage stage;
+    private final Stage stage;
 
     @FXML
     private MenuBar menuBar;
@@ -55,29 +57,45 @@ public class Main implements Initializable {
 
     private Path path;
 
-    private ResourceBundle resources;
+    private SimpleObjectProperty<ASN1Primitive> valueProperty = new SimpleObjectProperty<>(this, "value", null);
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        this.resources = resources;
-    }
+    final private ResourceBundle resources = ResourceBundle.getBundle("biz.ostw.security.asn1.editor.ui.message");
 
-    @Override
-    public void initialize() {
+    public Main(Stage stage) {
+        this.stage = stage;
+
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("main.fxml"));
+
+        loader.setRoot(this);
+        loader.setResources(this.resources);
+        loader.setController(this);
+        loader.setLocation(Main.class.getResource("main.fxml"));
+
+        try {
+            loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         this.initMenu();
         this.initComponents();
+    }
+
+    public void setValue(ASN1Primitive asn1) {
+        this.valueProperty.setValue(asn1);
+    }
+
+    public ASN1Primitive getValue() {
+        return this.valueProperty.getValue();
+    }
+
+    public ObjectProperty<ASN1Primitive> valueProperty() {
+        return this.valueProperty;
     }
 
     private void initComponents() {
 
         this.stage.setTitle(String.format(this.resources.getString("window.main.title"), "", ""));
-
-        this.asn1View.typeNameProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                Main.this.stage.setTitle(String.format(FxmlLoader.getDefault().getResourceBundle().getString("window.main.title"), newValue, String.valueOf(Main.this.path)));
-            }
-        });
         this.stage.getIcons().add(new Image(Main.class.getResourceAsStream("main.png")));
 
         this.stage.setX(this.preferences.getDouble("x", Main.getDefaultX()));
@@ -95,6 +113,12 @@ public class Main implements Initializable {
                 Main.this.preferences.putDouble("height", stage.getHeight());
             }
         });
+
+
+        this.asn1View.typeNameProperty().addListener((observable, oldValue, newValue) -> {
+            Main.this.stage.setTitle(String.format(this.resources.getString("window.main.title"), newValue, Main.this.path != null ? Main.this.path : ""));
+        });
+        this.asn1View.valueProperty().bind(this.valueProperty());
     }
 
     private void initDescriptionTableView() {
@@ -127,7 +151,7 @@ public class Main implements Initializable {
                         // Read content.
                         byte[] bytes = Files.readAllBytes(path);
                         ASN1Primitive asn = new ContentLoader().fromByteArray(bytes);
-                        Main.this.asn1View.setValue(asn);
+                        Main.this.setValue(asn);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -139,18 +163,16 @@ public class Main implements Initializable {
         this.closeMenuItem.addEventHandler(EventType.ROOT, event -> Main.this.menuBar.getScene().getWindow().hide());
 
         this.aboutMenuItem.addEventHandler(EventType.ROOT, event -> {
-            try {
-                About.getInstance().show();
-            } catch (IOException e) {
-            }
+            About.getInstance().show();
         });
     }
 
 
-    public static Stage getInstance(Stage stage) throws IOException {
-        FxmlLoader.getDefault().load(stage, About.class.getResourceAsStream("main.fxml"));
+    public static Main getInstance(Stage stage) {
+        final Main instance = new Main(stage);
+        stage.setScene(new Scene(instance));
 
-        return stage;
+        return instance;
     }
 
     private static double getDefaultX() {

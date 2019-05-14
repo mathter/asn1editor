@@ -1,6 +1,5 @@
 package biz.ostw.security.asn1.editor.ui.util;
 
-import biz.ostw.security.asn1.editor.ui.util.FxmlLoader;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 import java.util.ResourceBundle;
@@ -8,7 +7,7 @@ import java.util.function.Supplier;
 
 public class ExtensionFilterSupplier implements Supplier<ExtensionFilter[]> {
 
-    private final ResourceBundle resourceBundle = FxmlLoader.getDefault().getResourceBundle();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle("biz.ostw.security.asn1.editor.ui.message");
 
     @Override
     public ExtensionFilter[] get() {
