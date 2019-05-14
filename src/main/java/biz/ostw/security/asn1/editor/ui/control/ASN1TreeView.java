@@ -1,7 +1,11 @@
 package biz.ostw.security.asn1.editor.ui.control;
 
 import biz.ostw.security.asn1.editor.objinfo.ASN1ObjectInfo;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -14,6 +18,7 @@ import org.bouncycastle.util.Iterable;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
 
 public class ASN1TreeView extends TreeView<ASN1Primitive> implements Callback<TreeView<ASN1Primitive>, TreeCell<ASN1Primitive>> {
 
@@ -57,7 +62,7 @@ public class ASN1TreeView extends TreeView<ASN1Primitive> implements Callback<Tr
 
     @Override
     public TreeCell<ASN1Primitive> call(TreeView<ASN1Primitive> param) {
-        return new TextFieldTreeCell<ASN1Primitive>(new StringConverter<ASN1Primitive>() {
+        TextFieldTreeCell<ASN1Primitive> cell = new TextFieldTreeCell<>(new StringConverter<ASN1Primitive>() {
             @Override
             public String toString(ASN1Primitive object) {
                 ASN1ObjectInfo<ASN1Primitive> objectInfo = ASN1ObjectInfo.get((Class<ASN1Primitive>) object.getClass());
@@ -70,6 +75,33 @@ public class ASN1TreeView extends TreeView<ASN1Primitive> implements Callback<Tr
                 return null;
             }
         });
+
+        cell.setContextMenu(new ContextMenu(cell));
+
+        return cell;
+    }
+
+    private class ContextMenu extends javafx.scene.control.ContextMenu {
+
+        private MenuItem FAKE = new MenuItem("Fake");
+
+        private final TreeCell<ASN1Primitive> cell;
+
+        ContextMenu(final TreeCell<ASN1Primitive> cell) {
+            this.cell = cell;
+
+            this.showingProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    System.out.println(newValue);
+                    ContextMenu.this.getItems().remove(FAKE);
+
+                    Optional.ofNullable(ContextMenu.this.cell.getItem()).ifPresent(item -> getItems().addAll(Asn1MenuProvider.provide(item)));
+                }
+            });
+
+            this.getItems().add(FAKE);
+        }
     }
 
     private static class TreeItem<T extends ASN1Primitive> extends javafx.scene.control.TreeItem<T> {
@@ -84,5 +116,7 @@ public class ASN1TreeView extends TreeView<ASN1Primitive> implements Callback<Tr
         public TreeItem(T value, Node graphic) {
             super(value, graphic);
         }
+
+
     }
 }

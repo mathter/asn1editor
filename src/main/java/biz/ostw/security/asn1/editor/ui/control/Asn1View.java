@@ -3,18 +3,18 @@ package biz.ostw.security.asn1.editor.ui.control;
 import biz.ostw.security.asn1.editor.content.Content;
 import biz.ostw.security.asn1.editor.content.ContentAnalyzer;
 import biz.ostw.security.asn1.editor.objinfo.ASN1ObjectInfo;
-import biz.ostw.security.asn1.editor.ui.Main;
 import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 public class Asn1View extends VBox {
 
-    private final Preferences preferences = Preferences.userNodeForPackage(Main.class);
+    private final Preferences preferences = Preferences.userNodeForPackage(Asn1View.class);
 
     @FXML
     private ASN1TreeView treeView;
@@ -111,29 +111,33 @@ public class Asn1View extends VBox {
     }
 
     private void initComponents() {
-        Preferences preferences = this.getPreferences();
+        Preferences prefs = this.getPreferences();
 
         this.contentType.prefWidthProperty().bind(this.widthProperty());
 
         this.treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         this.treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> Asn1View.this.descriptionTableView.set(newValue.getValue()));
-        this.treeView.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                Asn1View.this.searchText.requestFocus();
-            }
-        });
+        this.treeView.addEventHandler(KeyEvent.KEY_RELEASED, event -> Asn1View.this.searchText.requestFocus());
 
-        this.splitPane.setDividerPositions(preferences.getDouble("divpos", 0.8));
-        this.splitPane.getDividers().stream().findFirst().ifPresent(d -> {
-            d.positionProperty().addListener((observable, oldValue, newValue) -> preferences.putDouble("divpos", d.getPosition()));
-        });
+        Platform.runLater(() -> {
+            Asn1View.this.splitPane.getDividers().stream().findFirst().ifPresent(d -> {
+                d.positionProperty().addListener((observable, oldValue, newValue) -> {
+                    prefs.putDouble("divpos", d.getPosition());
+                });
+            });
 
+            Asn1View.this.splitPane.setDividerPositions(prefs.getDouble("divpos", 0.8));
+        });
 
         this.searchClearButton.setOnAction(event -> Asn1View.this.searchText.clear());
         this.searchText.setOnAction(this::search);
         this.searchUpButton.setOnAction(this::search);
         this.searchDownButton.setOnAction(this::search);
+
+        Platform.runLater(() -> {
+            this.searchUseRegExpr.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("searchUseRegExpr", newValue));
+            this.searchUseRegExpr.selectedProperty().setValue(prefs.getBoolean("searchUseRegExpr", false));
+        });
     }
 
     private void search(ActionEvent event) {
@@ -232,6 +236,6 @@ public class Asn1View extends VBox {
     }
 
     private Preferences getPreferences() {
-        return Optional.ofNullable(this.getId()).map(id -> this.preferences.node(id)).orElse(this.preferences);
+        return Optional.ofNullable(this.getId()).map(id -> this.preferences.node(Asn1View.class.getName() + "_" + id)).orElse(this.preferences);
     }
 }

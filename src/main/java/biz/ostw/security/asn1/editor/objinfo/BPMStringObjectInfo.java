@@ -11,7 +11,7 @@ public class BPMStringObjectInfo extends ASN1ObjectInfo.Default<DERBMPString> {
     @Override
     public String toString(DERBMPString value) {
         StringBuffer sb = new StringBuffer("BPM STRING: ");
-        sb.append(value.toString());
+        sb.append(value.getString());
 
         return sb.toString();
     }
@@ -28,8 +28,8 @@ public class BPMStringObjectInfo extends ASN1ObjectInfo.Default<DERBMPString> {
 
         try {
             result.add(ASN1ObjectDescription.builder().name("Type").object(value).value("ASN1.DERBMPString").build());
-            result.add(ASN1ObjectDescription.builder().name("Value").object(value).value(String.valueOf(value.toString())).build());
-            result.add(ASN1ObjectDescription.builder().name("Length").object(value).value(String.valueOf(value.toString().length())).build());
+            result.add(ASN1ObjectDescription.builder().name("Value").object(value).value(String.valueOf(value.getString())).build());
+            result.add(ASN1ObjectDescription.builder().name("Length").object(value).value(String.valueOf(value.getString()).length()).build());
 
             result.add(this.raw(value));
         } catch (Exception e) {

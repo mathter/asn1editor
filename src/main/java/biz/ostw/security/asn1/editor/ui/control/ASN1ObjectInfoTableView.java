@@ -1,6 +1,7 @@
 package biz.ostw.security.asn1.editor.ui.control;
 
 import biz.ostw.security.asn1.editor.objinfo.ASN1ObjectInfo;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
@@ -19,6 +21,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -37,6 +40,9 @@ public class ASN1ObjectInfoTableView extends VBox implements ChangeListener<Obje
 
     @FXML
     private WebView valueView;
+
+    @FXML
+    private SplitPane splitePane;
 
     private ObservableList<ASN1ObjectInfo.ASN1ObjectDescription> list = FXCollections.observableArrayList();
 
@@ -78,6 +84,14 @@ public class ASN1ObjectInfoTableView extends VBox implements ChangeListener<Obje
                 return new SimpleStringProperty(String.valueOf(param.getValue().getValue()));
             }
         });
+
+        Platform.runLater(() -> {
+            Preferences prefs = this.getPreferences();
+            ASN1ObjectInfoTableView.this.splitePane.setDividerPositions(prefs.getDouble("divpos", 0.5));
+            ASN1ObjectInfoTableView.this.splitePane.getDividers().stream().findFirst().ifPresent(d -> {
+                d.positionProperty().addListener((observable, oldValue, newValue) -> prefs.putDouble("divpos", d.getPosition()));
+            });
+        });
     }
 
     public void set(ASN1Primitive asn1) {
@@ -114,5 +128,9 @@ public class ASN1ObjectInfoTableView extends VBox implements ChangeListener<Obje
     private void clear() {
         this.list.clear();
         this.valueView.getEngine().loadContent(this.resources.getString("biz.ostw.security.asn1.editor.ui.control.ASN1ObjectInfoTableView.object.info.detailes.empty.message"));
+    }
+
+    private Preferences getPreferences() {
+        return Optional.ofNullable(this.getId()).map(id -> this.preferences.node(ASN1ObjectInfoTableView.class.getName() + "_" + id)).orElse(this.preferences);
     }
 }

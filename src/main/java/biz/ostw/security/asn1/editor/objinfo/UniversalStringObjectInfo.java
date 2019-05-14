@@ -1,6 +1,7 @@
 package biz.ostw.security.asn1.editor.objinfo;
 
 import org.bouncycastle.asn1.DERUniversalString;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,7 @@ public class UniversalStringObjectInfo extends ASN1ObjectInfo.Default<DERUnivers
         try {
             result.add(ASN1ObjectDescription.builder().name("Type").object(value).value("ASN1.DERUniversalString").build());
             result.add(ASN1ObjectDescription.builder().name("Value").object(value).value(String.valueOf(value.toString())).build());
+            result.add(ASN1ObjectDescription.builder().name("Octets").object(value).value(Hex.toHexString(value.getOctets())).build());
             result.add(ASN1ObjectDescription.builder().name("Length").object(value).value(String.valueOf(value.toString().length())).build());
 
             result.add(this.raw(value));

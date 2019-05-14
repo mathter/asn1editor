@@ -27,7 +27,7 @@
                         </Menu>
                     </menus>
                 </MenuBar>
-                <Asn1View fx:id="asn1View" VBox.vgrow="ALWAYS" />
+                <Asn1View fx:id="asn1View" id="star" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
     </children>

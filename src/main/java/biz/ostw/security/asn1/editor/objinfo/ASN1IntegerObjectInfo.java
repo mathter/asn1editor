@@ -13,7 +13,7 @@ public class ASN1IntegerObjectInfo extends ASN1ObjectInfo.Default<ASN1Integer> {
 
         StringBuilder sb = new StringBuilder("INTEGER: ");
 
-        sb.append(value.toString());
+        sb.append(String.valueOf(value.getValue()));
 
         return sb.toString();
     }
