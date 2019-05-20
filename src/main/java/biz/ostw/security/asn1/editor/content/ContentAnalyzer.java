@@ -2,8 +2,10 @@ package biz.ostw.security.asn1.editor.content;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509AttributeCertificateHolder;
+import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.openssl.X509TrustedCertificateBlock;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
@@ -37,7 +39,15 @@ public class ContentAnalyzer {
                                 try {
                                     content = tryPkcs7Content(asn1);
                                 } catch (Exception e6) {
-                                    content = new UnknownContent(asn1);
+                                    try {
+                                        content = this.tryX509CRLContent(asn1);
+                                    } catch (Exception e7) {
+                                        try {
+                                            content = this.tryPrivateKeyContent(asn1);
+                                        } catch (Exception e8) {
+                                            content = new UnknownContent(asn1);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -47,6 +57,18 @@ public class ContentAnalyzer {
         }
 
         return content;
+    }
+
+    private PrivateKeyContent tryPrivateKeyContent(ASN1Primitive asn1) throws IOException {
+        final PrivateKeyInfo object = PrivateKeyInfo.getInstance(asn1.getEncoded());
+
+        return new PrivateKeyContent(object);
+    }
+
+    private X509CRLContent tryX509CRLContent(ASN1Primitive asn1) throws IOException {
+        final X509CRLHolder object = new X509CRLHolder(asn1.getEncoded());
+
+        return new X509CRLContent(object);
     }
 
     private RsaPublicKeyContent tryRsaPublicKeyContent(ASN1Primitive asn1) {

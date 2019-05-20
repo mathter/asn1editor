@@ -5,8 +5,6 @@ import biz.ostw.security.asn1.editor.ui.control.Asn1View;
 import biz.ostw.security.asn1.editor.ui.util.ExtensionFilterSupplier;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
@@ -19,12 +17,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Pair;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -44,7 +45,10 @@ public class Main extends AnchorPane {
     private MenuItem fileOpenMenuItem;
 
     @FXML
-    private MenuItem fileSaveAsMenuItem;
+    private MenuItem fileSaveAsDerMenuItem;
+
+    @FXML
+    private MenuItem fileSaveAsPemMenuItem;
 
     @FXML
     private MenuItem closeMenuItem;
@@ -157,7 +161,76 @@ public class Main extends AnchorPane {
                     }
                 }));
 
-        this.fileSaveAsMenuItem.addEventHandler(EventType.ROOT, event -> {
+        this.fileSaveAsDerMenuItem.addEventHandler(EventType.ROOT, event -> {
+            Optional.of(new FileChooser())
+                    .map(dialog -> {
+                        dialog.setTitle(Main.this.getResourceBundle().getString("window.menubar.file.saveasder.tilte"));
+                        dialog.getExtensionFilters().addAll(new ExtensionFilterSupplier().get());
+
+                        // Set initial derectory.
+                        try {
+                            File directory = new File(Main.this.preferences.get("lastpath", System.getProperty("user.home")));
+                            dialog.setInitialDirectory(directory);
+                        } catch (Exception e) {
+                        }
+
+                        return dialog.showSaveDialog(Main.this.menuBar.getScene().getWindow()).toPath();
+                    })
+                    .ifPresent(path -> {
+                        try {
+                            Main.this.path = path;
+
+                            // Save last opened path.
+                            String directory = path.getParent().toString();
+                            Main.this.preferences.put("lastpath", directory);
+
+                            byte[] bytes = asn1View.getValue().getEncoded();
+
+                            try (OutputStream os = new FileOutputStream(path.toFile())) {
+                                os.write(bytes);
+                                os.flush();
+                            }
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        });
+
+        this.fileSaveAsPemMenuItem.addEventHandler(EventType.ROOT, event -> {
+            Optional.of(new FileChooser())
+                    .map(dialog -> {
+                        dialog.setTitle(Main.this.getResourceBundle().getString("window.menubar.file.saveaspem.tilte"));
+                        dialog.getExtensionFilters().addAll(new ExtensionFilterSupplier().get());
+
+                        // Set initial derectory.
+                        try {
+                            File directory = new File(Main.this.preferences.get("lastpath", System.getProperty("user.home")));
+                            dialog.setInitialDirectory(directory);
+                        } catch (Exception e) {
+                        }
+
+                        return dialog.showSaveDialog(Main.this.menuBar.getScene().getWindow()).toPath();
+                    })
+                    .ifPresent(path -> {
+                        try {
+                            Main.this.path = path;
+
+                            // Save last opened path.
+                            String directory = path.getParent().toString();
+                            Main.this.preferences.put("lastpath", directory);
+
+                            try (OutputStream os = new FileOutputStream(path.toFile())) {
+                                try (OutputStreamWriter osw = new OutputStreamWriter(os)) {
+                                    try (JcaPEMWriter pemWriter = new JcaPEMWriter(osw)) {
+                                        pemWriter.writeObject(asn1View.getValue());
+                                        pemWriter.flush();
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         });
 
         this.closeMenuItem.addEventHandler(EventType.ROOT, event -> Main.this.menuBar.getScene().getWindow().hide());

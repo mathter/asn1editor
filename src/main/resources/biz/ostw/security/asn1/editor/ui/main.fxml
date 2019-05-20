@@ -20,8 +20,10 @@
                             <items>
                                 <MenuItem fx:id="fileOpenMenuItem" mnemonicParsing="false"
                                           text="%window.menubar.file.open.tilte"/>
-                                <MenuItem fx:id="fileSaveAsMenuItem" mnemonicParsing="false"
-                                          text="%window.menubar.file.saveas.tilte"/>
+                                <MenuItem fx:id="fileSaveAsDerMenuItem" mnemonicParsing="false"
+                                          text="%window.menubar.file.saveasder.tilte"/>
+                                <MenuItem fx:id="fileSaveAsPemMenuItem" mnemonicParsing="false"
+                                          text="%window.menubar.file.saveaspem.tilte"/>
                                 <MenuItem fx:id="closeMenuItem" mnemonicParsing="false"
                                           text="%window.menubar.file.close.tilte"/>
                             </items>

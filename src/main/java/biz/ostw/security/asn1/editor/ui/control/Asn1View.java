@@ -92,6 +92,10 @@ public class Asn1View extends VBox {
         this.valueProperty.setValue(asn1);
     }
 
+    public ASN1Primitive getValue() {
+        return this.valueProperty.getValue();
+    }
+
     public ObjectProperty<ASN1Primitive> valueProperty() {
         return this.valueProperty;
     }
@@ -106,7 +110,7 @@ public class Asn1View extends VBox {
         this.contentType.prefWidthProperty().bind(this.widthProperty());
 
         this.treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        this.treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> Asn1View.this.descriptionTableView.set(newValue.getValue()));
+        this.treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> Asn1View.this.descriptionTableView.set(newValue != null ? newValue.getValue() : null));
         this.treeView.addEventHandler(KeyEvent.KEY_RELEASED, event -> Asn1View.this.searchText.requestFocus());
 
         Platform.runLater(() -> {

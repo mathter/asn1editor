@@ -1,7 +1,5 @@
 package biz.ostw.security.asn1.editor.content;
 
-import java.util.ResourceBundle;
-
 public abstract class Content<T> {
 
     private T object;

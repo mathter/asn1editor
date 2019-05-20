@@ -95,8 +95,10 @@ public class ASN1ObjectInfoTableView extends VBox implements ChangeListener<Obje
     }
 
     public void set(ASN1Primitive asn1) {
-        ASN1ObjectInfo<ASN1Primitive> objectInfo = ASN1ObjectInfo.get((Class<ASN1Primitive>) asn1.getClass());
-        this.addAll(objectInfo.descriptions(asn1));
+        if (asn1 != null) {
+            ASN1ObjectInfo<ASN1Primitive> objectInfo = ASN1ObjectInfo.get((Class<ASN1Primitive>) asn1.getClass());
+            this.addAll(objectInfo.descriptions(asn1));
+        }
     }
 
     @Override
