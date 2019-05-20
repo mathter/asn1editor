@@ -88,7 +88,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>biz.ostw.security.asn1.editor.Main</mainClass>
+                            <mainClass>biz.ostw.security.editor.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

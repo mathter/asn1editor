@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import biz.ostw.security.editor.ui.control.ASN1TreeView?>
+<?import biz.ostw.security.editor.ui.control.ASN1ObjectInfoTableView?>
+<fx:root alignment="TOP_CENTER" prefHeight="279.0" prefWidth="357.0" type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Label fx:id="contentType" VBox.vgrow="ALWAYS">
+            <font>
+                <Font name="System Bold" size="14.0"/>
+            </font>
+        </Label>
+        <SplitPane fx:id="splitPane" dividerPositions="0.5" VBox.vgrow="ALWAYS">
+            <items>
+                <AnchorPane>
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <children>
+                                <ASN1TreeView fx:id="treeView" VBox.vgrow="ALWAYS">
+                                    <VBox.margin>
+                                        <Insets top="10.0"/>
+                                    </VBox.margin>
+                                </ASN1TreeView>
+                                <HBox fx:id="searchPane" alignment="BASELINE_LEFT">
+                                    <children>
+                                        <Label text="%biz.ostw.security.asn1.editor.ui.control.Asn1View.searchPane.label">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                            <HBox.margin>
+                                                <Insets right="10.0"/>
+                                            </HBox.margin>
+                                        </Label>
+                                        <TextField fx:id="searchText" minWidth="300.0" HBox.hgrow="ALWAYS">
+                                            <HBox.margin>
+                                                <Insets right="10.0"/>
+                                            </HBox.margin>
+                                        </TextField>
+                                        <Button fx:id="searchClearButton" mnemonicParsing="false" textAlignment="CENTER"
+                                                HBox.hgrow="ALWAYS">
+                                            <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" nodeOrientation="INHERIT"
+                                                           pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@clear_left.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                            <HBox.margin>
+                                                <Insets right="5.0"/>
+                                            </HBox.margin>
+                                        </Button>
+                                        <Button fx:id="searchUpButton" mnemonicParsing="false" textAlignment="CENTER"
+                                                HBox.hgrow="ALWAYS">
+                                            <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" nodeOrientation="INHERIT"
+                                                           pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@arrow_up.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                            <HBox.margin>
+                                                <Insets right="5.0"/>
+                                            </HBox.margin>
+                                        </Button>
+                                        <Button fx:id="searchDownButton" mnemonicParsing="false" textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" nodeOrientation="INHERIT"
+                                                           pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@arrow_down.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                            <HBox.margin>
+                                                <Insets right="5.0"/>
+                                            </HBox.margin>
+                                        </Button>
+                                        <CheckBox fx:id="searchUseRegExpr" mnemonicParsing="false"
+                                                  text="%biz.ostw.security.asn1.editor.ui.control.Asn1View.searchPane.searchUseRegExpr.label"/>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0">
+                    <children>
+                        <ASN1ObjectInfoTableView fx:id="descriptionTableView" AnchorPane.bottomAnchor="0.0"
+                                                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                                 AnchorPane.topAnchor="0.0"/>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </children>
+</fx:root>
