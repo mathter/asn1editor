@@ -9,6 +9,7 @@ import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,16 +30,20 @@ public class Asn1MenuBytesProvider extends Asn1MenuProvider {
 
     private List<MenuItem> openAs(ASN1Primitive asn1, List<MenuItem> collector) {
 
-        this.openAsMenuItem(asn1).ifPresent(menuItem -> collector.add(menuItem));
+        try {
+            this.openAsMenuItem(asn1).ifPresent(menuItem -> collector.add(menuItem));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return collector;
     }
 
-    private Optional<MenuItem> openAsMenuItem(ASN1Primitive asn1) {
+    private Optional<MenuItem> openAsMenuItem(ASN1Primitive asn1) throws IOException {
         final MenuItem menuItem;
 
         if (asn1 instanceof ASN1OctetString || asn1 instanceof ASN1BitString) {
-            menuItem = new MenuItem("Open as " + new ContentAnalyzer().analyze(asn1).getDescription());
+            menuItem = new MenuItem("Open as " + ContentAnalyzer.analyze(asn1).get(0).getDescription());
 
             menuItem.setOnAction(event -> {
                 final Stage stage = new Stage();

@@ -1,6 +1,6 @@
 package biz.ostw.security.editor.ui.control;
 
-import biz.ostw.security.editor.content.Content;
+import biz.ostw.security.editor.content.LeafContent;
 import biz.ostw.security.editor.content.ContentAnalyzer;
 import biz.ostw.security.editor.objinfo.ASN1ObjectInfo;
 import com.sun.javafx.collections.ObservableListWrapper;
@@ -136,14 +136,15 @@ public class Asn1View extends VBox {
         this.valueProperty.addListener(new ChangeListener<ASN1Primitive>() {
             @Override
             public void changed(ObservableValue<? extends ASN1Primitive> observable, ASN1Primitive oldValue, ASN1Primitive newValue) {
-                if (newValue != null) {
-                    final Content<?> content = new ContentAnalyzer().analyze(newValue);
-                    Asn1View.this.contentType.setText(String.format(Asn1View.this.resources.getString("biz.ostw.security.asn1.editor.ui.control.Asn1View.objectidentifier.type"), content.getDescription()));
-                } else {
-                    Asn1View.this.contentType.setText("");
-                }
-
                 try {
+                    if (newValue != null) {
+                        final LeafContent<?> content = ContentAnalyzer.analyze(newValue).get(0);
+                        Asn1View.this.contentType.setText(String.format(Asn1View.this.resources.getString("biz.ostw.security.asn1.editor.ui.control.Asn1View.objectidentifier.type"), content.getDescription()));
+                    } else {
+                        Asn1View.this.contentType.setText("");
+                    }
+
+
                     Asn1View.this.treeView.setRoot(newValue);
                 } catch (IOException e) {
                     throw new RuntimeException(e);

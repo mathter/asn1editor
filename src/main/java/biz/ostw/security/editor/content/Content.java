@@ -1,18 +1,7 @@
 package biz.ostw.security.editor.content;
 
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.util.Encodable;
 
-public abstract class Content<T extends ASN1Encodable> {
-
-    private T object;
-
-    protected Content(T object) {
-        this.object = object;
-    }
-
-    public T getObject() {
-        return this.object;
-    }
-
-    public abstract String getDescription();
+public interface Content<T extends ASN1Encodable> extends Encodable {
 }

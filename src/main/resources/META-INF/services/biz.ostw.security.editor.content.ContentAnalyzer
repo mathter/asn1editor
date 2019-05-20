@@ -1,0 +1,9 @@
+biz.ostw.security.editor.content.X509CertificateContentAnalyzer
+biz.ostw.security.editor.content.PKCS10CertificationRequestContentAnalyzer
+biz.ostw.security.editor.content.PKCS7ContentAnalyzer
+biz.ostw.security.editor.content.RsaPublicKeyContentAnalyzer
+biz.ostw.security.editor.content.PublicKeyContentAnalyzer
+biz.ostw.security.editor.content.PrivateKeyContentAnalyzer
+biz.ostw.security.editor.content.X509AttributeCertificateContentAnalyzer
+biz.ostw.security.editor.content.X509CRLContentAnalyzer
+biz.ostw.security.editor.content.UnknownContentAnalyzer

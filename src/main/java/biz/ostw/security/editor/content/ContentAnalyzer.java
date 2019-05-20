@@ -1,5 +1,6 @@
 package biz.ostw.security.editor.content;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -12,52 +13,28 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
 
-public class ContentAnalyzer {
+public abstract class ContentAnalyzer {
 
-    public Content<?> analyze(ASN1Primitive asn1) {
-        Content content;
+    public static List<LeafContent<?>> analyze(ASN1Encodable encodable) throws IOException {
+        final List<LeafContent<?>> result = new ArrayList<>();
 
-        try {
-            content = this.tryX509CertificateContent(asn1);
-        } catch (Exception e0) {
-            try {
-                content = this.tryPkcs10CertificationRequest(asn1);
-            } catch (Exception e1) {
-                try {
-                    content = this.tryX509TrustedCertificateBlockContent(asn1);
-                } catch (Exception e2) {
-                    try {
-                        content = this.tryX509AttributeCertificateContent(asn1);
-                    } catch (Exception e3) {
-                        try {
-                            content = this.tryPublicKeyContent(asn1);
-                        } catch (Exception e4) {
-                            try {
-                                content = this.tryRsaPublicKeyContent(asn1);
-                            } catch (Exception e5) {
-                                try {
-                                    content = tryPkcs7Content(asn1);
-                                } catch (Exception e6) {
-                                    try {
-                                        content = this.tryX509CRLContent(asn1);
-                                    } catch (Exception e7) {
-                                        try {
-                                            content = this.tryPrivateKeyContent(asn1);
-                                        } catch (Exception e8) {
-                                            content = new UnknownContent(asn1);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        for (ContentAnalyzer contentAnalyzer : ServiceLoader.load(ContentAnalyzer.class)) {
+            List<LeafContent<?>> c = contentAnalyzer.resolve(encodable);
+
+            if (c != null) {
+                result.addAll(c);
+                break;
             }
         }
 
-        return content;
+        return result;
     }
+
+    protected abstract List<LeafContent<?>> resolve(ASN1Encodable object) throws IOException;
 
     private PrivateKeyContent tryPrivateKeyContent(ASN1Primitive asn1) throws IOException {
         final PrivateKeyInfo object = PrivateKeyInfo.getInstance(asn1.getEncoded());
