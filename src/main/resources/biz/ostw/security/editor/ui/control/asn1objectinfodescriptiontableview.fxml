@@ -16,7 +16,7 @@
                         <TableView fx:id="table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-90.0" AnchorPane.topAnchor="0.0">
                             <columns>
                                 <TableColumn fx:id="nameColumn" text="%biz.ostw.security.asn1.editor.ui.control.ASN1ObjectInfoTableView.object.info.parameter.name" />
-                                <TableColumn fx:id="valueColumn" text="%biz.ostw.security.asn1.editor.ui.control.ASN1ObjectInfoTableView.object.info.parameter.value" />
+                                <TableColumn fx:id="valueColumn" text="%biz.ostw.security.asn1.editor.ui.control.ASN1ObjectInfoTableView.object.info.parameter.valueProperty" />
                             </columns>
                             <columnResizePolicy>
                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
