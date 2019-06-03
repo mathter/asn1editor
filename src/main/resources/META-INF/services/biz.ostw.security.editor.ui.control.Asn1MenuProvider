@@ -1,2 +1,3 @@
-biz.ostw.security.editor.ui.control.provider.Asn1MenuCommonProvider
-biz.ostw.security.editor.ui.control.provider.Asn1MenuBytesProvider
+biz.ostw.security.editor.ui.control.provider.CommonAsn1MenuProvider
+biz.ostw.security.editor.ui.control.provider.BytesAsn1MenuProvider
+biz.ostw.security.editor.ui.control.provider.CertificateAsn1MenuProvider

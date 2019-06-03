@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Asn1MenuBytesProvider extends Asn1MenuProvider {
+public class BytesAsn1MenuProvider extends Asn1MenuProvider {
 
     private static final String KEY = "bytes";
 
@@ -33,7 +33,7 @@ public class Asn1MenuBytesProvider extends Asn1MenuProvider {
         try {
             this.openAsMenuItem(asn1).ifPresent(menuItem -> collector.add(menuItem));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return collector;

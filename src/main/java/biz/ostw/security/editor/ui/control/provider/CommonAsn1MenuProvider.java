@@ -7,7 +7,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import java.util.Collections;
 import java.util.List;
 
-public class Asn1MenuCommonProvider extends Asn1MenuProvider {
+public class CommonAsn1MenuProvider extends Asn1MenuProvider {
 
     private static final String KEY = "common";
 
