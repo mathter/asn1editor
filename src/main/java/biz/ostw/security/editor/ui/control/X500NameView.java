@@ -1,5 +1,6 @@
 package biz.ostw.security.editor.ui.control;
 
+import biz.ostw.security.editor.ui.CommonService;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -116,6 +117,6 @@ public class X500NameView extends TableView<AttributeTypeAndValue> {
     }
 
     private X500NameStyle getX500NameStyle() {
-        return BCStyle.INSTANCE;
+        return CommonService.x500NameStyle();
     }
 }
