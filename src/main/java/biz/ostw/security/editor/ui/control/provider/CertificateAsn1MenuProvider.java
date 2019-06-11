@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class CertificateAsn1MenuProvider extends Asn1MenuProvider {
 
     private static final String KEY = "certificate";
+
+    private final ResourceBundle resources = ResourceBundle.getBundle("biz.ostw.security.editor.ui.control.message");
 
     @Override
     public List<MenuItem> get(ASN1Primitive asn1) {
@@ -56,6 +59,8 @@ public class CertificateAsn1MenuProvider extends Asn1MenuProvider {
                 menuItem.setOnAction(event -> {
                     final Stage stage = new Stage();
                     final X509CertificateView x509CertificateView = X509CertificateView.getInstance(stage);
+
+                    stage.setTitle(resources.getString("biz.ostw.security.asn1.editor.ui.control.X509CertificateView.title"));
 
                     x509CertificateView.setValue(certificate);
 

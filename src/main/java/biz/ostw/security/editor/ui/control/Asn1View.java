@@ -1,20 +1,28 @@
 package biz.ostw.security.editor.ui.control;
 
-import biz.ostw.security.editor.content.LeafContent;
 import biz.ostw.security.editor.content.ContentAnalyzer;
+import biz.ostw.security.editor.content.LeafContent;
 import biz.ostw.security.editor.objinfo.ASN1ObjectInfo;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -45,6 +53,8 @@ public class Asn1View extends VBox {
     @FXML
     private Label contentType;
 
+    private final BooleanProperty contentTypeVisible = new SimpleBooleanProperty(true);
+
     @FXML
     private Pane searchPane;
 
@@ -63,6 +73,11 @@ public class Asn1View extends VBox {
     @FXML
     private CheckBox searchUseRegExpr;
 
+    private final BooleanProperty searchPaneVisible = new SimpleBooleanProperty(true);
+
+    @FXML
+    private VBox leftContainer;
+
     private final ObservableList<TreeItem> searchResult = new ObservableListWrapper<>(new ArrayList<>());
 
     private ObjectProperty<TreeItem> searchCurrentItemProperty = new SimpleObjectProperty<>(this, "searchCurrentItemProperty", null);
@@ -70,6 +85,7 @@ public class Asn1View extends VBox {
     private final SimpleObjectProperty<ASN1Primitive> valueProperty = new SimpleObjectProperty<>(this, "value", null);
 
     private ResourceBundle resources = ResourceBundle.getBundle("biz.ostw.security.editor.ui.control.message");
+
 
     public Asn1View() {
         final FXMLLoader loader = new FXMLLoader(Asn1View.class.getResource("asn1view.fxml"));
@@ -100,14 +116,29 @@ public class Asn1View extends VBox {
         return this.valueProperty;
     }
 
-    public StringProperty typeNameProperty() {
+    public ReadOnlyStringProperty typeNameProperty() {
         return this.contentType.textProperty();
+    }
+
+    public BooleanProperty contentTypeVisible() {
+        return this.contentTypeVisible;
+    }
+
+    public BooleanProperty searchPaneVisible() {
+        return this.searchPaneVisible;
     }
 
     private void initComponents() {
         Preferences prefs = this.getPreferences();
 
         this.contentType.prefWidthProperty().bind(this.widthProperty());
+        this.contentTypeVisible.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                this.getChildren().add(0, this.contentType);
+            } else {
+                this.getChildren().remove(this.contentType);
+            }
+        });
 
         this.treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         this.treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> Asn1View.this.descriptionTableView.set(newValue != null ? newValue.getValue() : null));
@@ -127,6 +158,13 @@ public class Asn1View extends VBox {
         this.searchText.setOnAction(this::search);
         this.searchUpButton.setOnAction(this::search);
         this.searchDownButton.setOnAction(this::search);
+        this.searchPaneVisible.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                this.leftContainer.getChildren().add(this.searchPane);
+            } else {
+                this.leftContainer.getChildren().remove(this.searchPane);
+            }
+        });
 
         Platform.runLater(() -> {
             this.searchUseRegExpr.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("searchUseRegExpr", newValue));

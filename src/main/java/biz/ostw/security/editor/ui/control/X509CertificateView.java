@@ -15,10 +15,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 
 import java.awt.*;
@@ -52,10 +52,14 @@ public class X509CertificateView extends VBox {
 
     private final ObservableList<KeyValue<String, ?>> commonValues = FXCollections.observableArrayList();
 
-    private final ObservableList<KeyValue<String, ?>> signatureParameterValues = FXCollections.observableArrayList();
+    @FXML
+    private AlgorithmDataView signatureView;
+
+    @FXML
+    private AlgorithmDataView subjectPublicKeyInfoView;
 
     public X509CertificateView() {
-        final FXMLLoader loader = new FXMLLoader(Asn1View.class.getResource("x509CertificateView.fxml"));
+        final FXMLLoader loader = new FXMLLoader(X509CertificateView.class.getResource("x509CertificateView.fxml"));
 
         loader.setRoot(this);
         loader.setResources(this.resources);
@@ -92,11 +96,17 @@ public class X509CertificateView extends VBox {
     }
 
     private void fill(ObservableValue<? extends Certificate> observable, Certificate oldValue, Certificate newValue) {
-        this.holder = new X509CertificateHolder(newValue);
-        this.issuer.setValue(this.holder.getIssuer());
-        this.subject.setValue(this.holder.getSubject());
-        this.fillCommonTableView(this.holder);
-        this.fillSignature(this.holder);
+        try {
+            this.holder = new X509CertificateHolder(newValue);
+
+            this.issuer.setValue(this.holder.getIssuer());
+            this.subject.setValue(this.holder.getSubject());
+            this.fillCommonTableView(this.holder);
+            this.fillSignature(this.holder);
+            this.fillSubjectPublicKeyInfo(this.holder);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void fillCommonTableView(X509CertificateHolder holder) {
@@ -120,14 +130,23 @@ public class X509CertificateView extends VBox {
         ));
     }
 
-    private void fillSignature(X509CertificateHolder holder) {
+    private void fillSignature(X509CertificateHolder holder) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = holder.getSignatureAlgorithm();
 
-        this.signatureParameterValues.clear();
-        this.signatureParameterValues.add(new KeyValue<>(holder,
-                h -> this.resources.getString("biz.ostw.security.asn1.editor.ui.control.X509CertificateView.signature.algorithm.title"),
-                holder1 -> algorithmIdentifier.getAlgorithm().getId()
-        ));
+        this.signatureView.setAlgorithmIdentifier(algorithmIdentifier);
+        this.signatureView.setData(holder.getSignature());
+    }
+
+    private void fillSubjectPublicKeyInfo(X509CertificateHolder holder) throws IOException {
+        SubjectPublicKeyInfo subjectPublicKeyInfo = holder.getSubjectPublicKeyInfo();
+
+        this.subjectPublicKeyInfoView.setAlgorithmIdentifier(subjectPublicKeyInfo.getAlgorithm());
+
+        if (subjectPublicKeyInfo.getPublicKeyData() != null) {
+            this.subjectPublicKeyInfoView.setData(subjectPublicKeyInfo.getPublicKeyData().getBytes());
+        } else {
+            this.subjectPublicKeyInfoView.setData(null);
+        }
     }
 
     private void gotoRef(ASN1ObjectIdentifier identifier) throws IOException {
