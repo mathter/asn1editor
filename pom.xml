@@ -6,7 +6,7 @@
 
     <groupId>biz.ostw.security</groupId>
     <artifactId>asn1-editor</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0</version>
 
     <scm>
         <url>https://github.com/mathter/fsi.git</url>
